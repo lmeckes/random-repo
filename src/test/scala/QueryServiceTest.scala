@@ -66,4 +66,8 @@ class QueryServiceTest extends
     assert(runway2.length_ft.getOrElse("") === "150")
   }
 
+  "Report" should "return results" in {
+    QueryService.Report.run
+  }
+
 }

@@ -12,4 +12,4 @@ libraryDependencies += "com.typesafe.akka" %% "akka-http-testkit" % "2.4.2" % "t
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 
-TaskKey[Unit]("airportServer") := (runMain in Compile).toTask(" server.Server").value
+TaskKey[Unit]("airportServer") := (runMain in Compile).toTask(" server.AirportRESTServer").value

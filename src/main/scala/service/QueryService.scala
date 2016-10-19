@@ -2,7 +2,6 @@ package service
 
 import model._
 
-import scala.annotation.tailrec
 import scala.io.Source
 
 /**
@@ -31,28 +30,19 @@ object QueryService {
   }
 
   def query(q: String): Seq[Airport] = {
-
-    def countryCodesFromString(s: String) =
-      Data.countries
-        .filter(_.name.getOrElse("").toLowerCase
-          contains s.toLowerCase)
-        .map(_.code.get)
-
-    def isCountryCode(s: String) =
-      Data.countries.exists(
-        _.code.equals(Some(s)))
-
-    if (isCountryCode(q.toUpperCase))
+    if (Data.countries.exists(_.code.equals(Some(q))))
       Data.airports.filter(_.iso_country == Some(q))
     else {
-      val codes = countryCodesFromString(q)
-      codes size match {
+      val foundCodes = Data.countries
+        .filter(_.name.getOrElse("").toLowerCase
+          contains q.toLowerCase)
+        .map(_.code.get)
+      foundCodes size match {
         case 0 => throw new NoSuchElementException
-        case 1 => query(codes.head)
+        case 1 => query(foundCodes.head)
         case _ => throw new IllegalArgumentException
       }
     }
-
   }
 
   /*
@@ -61,9 +51,38 @@ object QueryService {
     - Type of runways (as indicated in "surface" column) per country
     - Bonus: Print the top 10 most common runway identifications (indicated in "le_ident" column)
    */
-  def report = {
+  object Report {
 
-    // val tenCountriesByAirportCount =
+    lazy val airportByCountry =
+      Data.airports.groupBy(_.iso_country)
+        .map(c => (c._1.get, c._2.size))
+        .toSeq
+        .sortBy(_._2)
+
+    lazy val tenWithMost = airportByCountry.reverse take 10
+    lazy val tenWithLeast = airportByCountry take 10
+
+    lazy val runwaysTypesByCountry =
+      Data.airports.groupBy(_.iso_country)
+        .map(c => {
+          (
+            c._1.get,
+            c._2.flatMap(
+              _.runways.getOrElse(Seq[Runway]())
+              .map(_.surface.get)
+              )
+              .groupBy(s => s)
+              .mapValues(_.size)
+            )
+        })
+
+    def run = {
+
+      println(s"10WithMost=$tenWithMost")
+      println(s"10WithLeast=$tenWithLeast")
+      println(s"rbc=$runwaysTypesByCountry")
+
+    }
 
   }
 
