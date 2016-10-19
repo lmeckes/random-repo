@@ -1,1 +1,97 @@
-<a href="/airports">Airports JSON</a>
+<!doctype html>
+<html ng-app="airport">
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
+    <script>
+        angular.module('airport', [])
+            .controller('airportCountry', function($scope, $http) {
+                $scope.refresh = function() {
+                    $scope.focus = null
+                    $scope.RESTloading = true
+                    $http.get("airports/" + $scope.queryString)
+                   .then(
+                       function(response){
+                         $scope.airports = response.data;
+                         $scope.RESTloading = false
+                       },
+                       function(response){
+                         $scope.airports = null
+                         $scope.RESTloading = false
+                       }
+                    );
+                  };
+                $scope.zoom = function(airport) {
+                    $scope.focus = airport
+                }
+            });
+
+    </script>
+</head>
+
+<body>
+<div ng-controller="airportCountry">
+    <label>Enter a country code or a country name: or <a href="/report">View report</a></label>
+    <input type="text" ng-model="queryString" ng-model-options='{debounce: 1000}' ng-change="refresh()"
+           placeholder="Enter a country here">
+    <hr/>
+
+    <span ng-show="queryString != null && RESTloading==false">
+        <h1 ng-show="airports != null && airports.length > 0">{{airports.length}} airports matching '{{queryString}}'</h1>
+        <h1 ng-hide="airports != null && airports.length > 0">No airport matching '{{queryString}}'</h1>
+    </span>
+    <h1 ng-show="RESTloading==true">Querying airport service ...</h1>
+
+    <div ng-show="focus != null"
+         style="position: fixed; top: 1em; right: 1em; width: 50%;">
+        <h1>{{focus.name}}</h1>
+
+        <ul>
+            <li>id: {{focus.id}}</li>
+            <li>ident: {{focus.ident}}</li>
+            <li>type: {{focus.typex}}</li>
+            <li>name: {{focus.name}}</li>
+            <li>latitude_deg: {{focus.latitude_deg}}</li>
+            <li>longitude_deg: {{focus.longitude_deg}}</li>
+            <li>elevation_ft: {{focus.elevation_ft}}</li>
+            <li>continent: {{focus.continent}}</li>
+            <li>iso_country: {{focus.iso_country}}</li>
+            <li>iso_region: {{focus.iso_region}}</li>
+            <li>municipality: {{focus.municipality}}</li>
+            <li>scheduled_service: {{focus.scheduled_service}}</li>
+            <li>gps_code: {{focus.gps_code}}</li>
+            <li>iata_code: {{focus.iata_code}}</li>
+            <li>local_code: {{focus.local_code}}</li>
+            <li>home_link: {{focus.home_link}}</li>
+            <li>wikipedia_link: <a href="{{focus.wikipedia_link}}">{{focus.wikipedia_link}}</a></li>
+            <li>keywords: {{focus.keywords}}</li>
+            <li>runways:
+
+                <ul ng-show="focus.runways.length > 0">
+                    <li ng-repeat="r in focus.runways">
+                        <h3>runway {{r.id}}</h3>
+                        surface: {{r.surface}}
+                        ident: {{r.le_ident}}
+                    </li>
+                </ul>
+
+            </li>
+        </ul>
+
+    </div>
+
+    <div>
+        <ul>
+            <li ng-repeat="a in airports">
+                <a ng-click="zoom(a)" href="javascript:void(0);">
+                    {{a.name}}
+                    <span ng-show="a.runways.length > 0">
+                        ({{a.runways.length}} runways)</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
