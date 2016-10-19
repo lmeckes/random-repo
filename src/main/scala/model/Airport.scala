@@ -3,28 +3,52 @@ package model
 /**
   * Created by louis on 18/10/2016.
   */
-class Airport(data: Array[String], rw: Option[Seq[Runway]]) {
-
-  val id = data.lift(0)
-  val ident = data.lift(1)
-  val typex = data.lift(2)
-  val name = data.lift(3)
-  val latitude_deg = data.lift(4)
-  val longitude_deg = data.lift(5)
-  val elevation_ft = data.lift(6)
-  val continent = data.lift(7)
-  val iso_country = data.lift(8)
-  val iso_region = data.lift(9)
-  val municipality = data.lift(10)
-  val scheduled_service = data.lift(11)
-  val gps_code = data.lift(12)
-  val iata_code = data.lift(13)
-  val local_code = data.lift(14)
-  val home_link = data.lift(15)
-  val wikipedia_link = data.lift(16)
-  val keywords = data.lift(17)
-  def runways = rw
-
+case class Airport(
+    id: Option[String],
+    ident: Option[String],
+    typex: Option[String],
+    name: Option[String],
+    latitude_deg: Option[String],
+    longitude_deg: Option[String],
+    elevation_ft: Option[String],
+    continent: Option[String],
+    iso_country: Option[String],
+    iso_region: Option[String],
+    municipality: Option[String],
+    scheduled_service: Option[String],
+    gps_code: Option[String],
+    iata_code: Option[String],
+    local_code: Option[String],
+    home_link: Option[String],
+    wikipedia_link: Option[String],
+    keywords: Option[String],
+    runways: Option[Seq[Runway]]) {
   override def toString = s"$id, $ident, $iso_country"
+}
 
+object Airport {
+  def create(data: Array[String],
+             runways: Option[Seq[Runway]]): Airport = {
+    new Airport(
+      data.lift(0),
+      data.lift(1),
+      data.lift(2),
+      data.lift(3),
+      data.lift(4),
+      data.lift(5),
+      data.lift(6),
+      data.lift(7),
+      data.lift(8),
+      data.lift(9),
+      data.lift(10),
+      data.lift(11),
+      data.lift(12),
+      data.lift(13),
+      data.lift(14),
+      data.lift(15),
+      data.lift(16),
+      data.lift(17),
+      runways
+    )
+  }
 }

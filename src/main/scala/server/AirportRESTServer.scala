@@ -5,7 +5,8 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ActorMaterializer, Materializer}
-import org.json4s._
+import de.heikoseeberger.akkahttpjson4s.Json4sSupport
+import org.json4s.{DefaultFormats, jackson}
 import service.QueryService
 
 import scala.io.StdIn
@@ -17,23 +18,26 @@ object AirportRESTServer {
 
   def main(args: Array[String]) {
 
-    implicit val system = ActorSystem("my-system")
-    implicit val materializer = ActorMaterializer()
-    // needed for the future flatMap/onComplete in the end
+    implicit val system = ActorSystem("airport-system")
+    implicit val mat = ActorMaterializer()
     implicit val executionContext = system.dispatcher
 
     def route(implicit mat: Materializer) = {
-      import Directives._
-      import org.json4s._
-      import org.json4s.native.Serialization.{ read, write, writePretty }
 
-      implicit val serialization = native.Serialization // or native.Serialization
+      import Directives._
+      import Json4sSupport._
+
+      implicit val serialization = jackson.Serialization
       implicit val formats = DefaultFormats
 
-      pathSingleSlash {
-        get {
-          complete(ToResponseMarshallable(write("test")))
-        }
+      get {
+        pathSingleSlash(getFromResource("public/index.html")) ~
+          path("airports" / Segment) { searchString =>
+            complete(
+              ToResponseMarshallable(
+                QueryService.query(searchString)
+              ))
+          }
       }
     }
 

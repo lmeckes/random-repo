@@ -20,12 +20,12 @@ object QueryService {
             .stripSuffix("\"")))
 
     lazy val sortedRunways = loadCsv("resources/runways.csv")
-      .map(new Runway(_)).toSeq.groupBy(_.airport_ref)
+      .map(Runway.create(_)).toSeq.groupBy(_.airport_ref)
 
     lazy val airports = loadCsv("resources/airports.csv") map (a =>
-      new Airport(a, sortedRunways.get(Some(a(0))))) toSeq
+      Airport.create(a, sortedRunways.get(Some(a(0))))) toSeq
 
-    lazy val countries = loadCsv("resources/countries.csv") map (new Country(_)) toSeq
+    lazy val countries = loadCsv("resources/countries.csv") map (Country.create(_)) toSeq
 
   }
 
