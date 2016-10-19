@@ -29,6 +29,47 @@ object QueryService {
 
   }
 
+  object Report {
+
+    lazy val airportByCountry =
+      Data.airports
+        .groupBy(_.iso_country)
+        .map(c => (c._1.get, c._2.size))
+        .toSeq
+        .sortBy(_._2)
+
+    lazy val tenWithMost = airportByCountry drop (airportByCountry.size - 10) reverse
+    lazy val tenWithLeast = airportByCountry take 10
+
+    lazy val runwaysTypesByCountry =
+      Data.airports
+        .groupBy(_.iso_country)
+        .map(c => {
+          (c._1.get,
+            c._2.flatMap(
+              _.runways.getOrElse(Seq[Runway]())
+                .map(_.surface.get)
+            ).groupBy(s => s).mapValues(_.size))
+        })
+
+    lazy val mostCommonRunwayIdent =
+      Data.airports.flatMap(
+        _.runways.getOrElse(Seq[Runway]())
+          .map(_.le_ident.getOrElse("unknown"))
+      ).groupBy(i => i).mapValues(_.size)
+        .toList.sortBy(_._2)
+        .reverse
+        .take(10)
+
+    def run = {
+      println(s"tenWithMost=$tenWithMost")
+      println(s"tenWithLeast=$tenWithLeast")
+      println(s"runwaysTypesByCountry=$runwaysTypesByCountry")
+      println(s"mostCommonRunwayIdent=$mostCommonRunwayIdent")
+    }
+
+  }
+
   def query(q: String): Seq[Airport] = {
     if (Data.countries.exists(_.code.equals(Some(q))))
       Data.airports.filter(_.iso_country == Some(q))
@@ -43,47 +84,6 @@ object QueryService {
         case _ => throw new IllegalArgumentException
       }
     }
-  }
-
-  /*
-  - Choosing Reports will print the following:
-    - 10 countries with highest number of airports (with count) and countries with lowest number of airports.
-    - Type of runways (as indicated in "surface" column) per country
-    - Bonus: Print the top 10 most common runway identifications (indicated in "le_ident" column)
-   */
-  object Report {
-
-    lazy val airportByCountry =
-      Data.airports.groupBy(_.iso_country)
-        .map(c => (c._1.get, c._2.size))
-        .toSeq
-        .sortBy(_._2)
-
-    lazy val tenWithMost = airportByCountry.reverse take 10
-    lazy val tenWithLeast = airportByCountry take 10
-
-    lazy val runwaysTypesByCountry =
-      Data.airports.groupBy(_.iso_country)
-        .map(c => {
-          (
-            c._1.get,
-            c._2.flatMap(
-              _.runways.getOrElse(Seq[Runway]())
-              .map(_.surface.get)
-              )
-              .groupBy(s => s)
-              .mapValues(_.size)
-            )
-        })
-
-    def run = {
-
-      println(s"10WithMost=$tenWithMost")
-      println(s"10WithLeast=$tenWithLeast")
-      println(s"rbc=$runwaysTypesByCountry")
-
-    }
-
   }
 
 }

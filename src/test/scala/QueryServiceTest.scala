@@ -24,17 +24,17 @@ class QueryServiceTest extends
     assert(req.size === 148)
   }
 
-  "Query" should "return return 148 airports from countryName 'Japan'" in {
+  "Query" should "return 148 airports from countryName 'Japan'" in {
     val req = QueryService.query("Japan")
     assert(req.size === 148)
   }
 
-  "Query" should "return return 148 airports from upper countryName 'JAPAN'" in {
+  "Query" should "return 148 airports from upper countryName 'JAPAN'" in {
     val req = QueryService.query("JAPAN")
     assert(req.size === 148)
   }
 
-  "Query" should "return return 1 airport from incomplete countryName 'iechtenstein'" in {
+  "Query" should "return 1 airport from incomplete countryName 'iechtenstein'" in {
     val req = QueryService.query("iechtenstein")
     assert(req.size === 1)
   }
