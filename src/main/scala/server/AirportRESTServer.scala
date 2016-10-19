@@ -6,14 +6,14 @@ import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.server.Directives
 import akka.stream.{ActorMaterializer, Materializer}
 import org.json4s._
-import service.Oracle
+import service.QueryService
 
 import scala.io.StdIn
 
 /**
   * Created by louis on 18/10/2016.
   */
-object Server {
+object AirportRESTServer {
 
   def main(args: Array[String]) {
 
@@ -22,11 +22,9 @@ object Server {
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
 
-
     def route(implicit mat: Materializer) = {
       import Directives._
       import org.json4s._
-      import org.json4s.native.Serialization
       import org.json4s.native.Serialization.{ read, write, writePretty }
 
       implicit val serialization = native.Serialization // or native.Serialization
@@ -41,7 +39,7 @@ object Server {
 
     val bindingFuture = Http().bindAndHandle(route, "localhost", 7890)
 
-    println(s"Server online at http://localhost:7890/\nPress RETURN to stop...")
+    println(s"Airport Server online at http://localhost:7890/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
     bindingFuture
       .flatMap(_.unbind()) // trigger unbinding from the port
