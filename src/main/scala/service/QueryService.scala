@@ -62,13 +62,12 @@ object QueryService {
         .take(10)
 
     def run = {
-      println(s"tenWithMost=$tenWithMost")
-      println(s"tenWithLeast=$tenWithLeast")
-      println(s"runwaysTypesByCountry=$runwaysTypesByCountry")
-      println(s"mostCommonRunwayIdent=$mostCommonRunwayIdent")
+      new ReportData(tenWithMost, tenWithLeast, runwaysTypesByCountry, mostCommonRunwayIdent)
     }
 
   }
+
+  def reportData = Report.run
 
   def query(q: String): Seq[Airport] = {
     if (Data.countries.exists(_.code.equals(Some(q))))

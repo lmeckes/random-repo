@@ -37,7 +37,14 @@ object AirportRESTServer {
               ToResponseMarshallable(
                 QueryService.query(searchString)
               ))
-          }
+          } ~
+          path("reportData") {
+            complete(
+              ToResponseMarshallable(
+                QueryService.reportData
+              ))
+          } ~
+          getFromResourceDirectory("public")
       }
     }
 

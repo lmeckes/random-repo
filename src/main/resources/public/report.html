@@ -1,0 +1,70 @@
+<!doctype html>
+<html ng-app="report">
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
+    <script>
+        angular.module('report', [])
+            .controller('reportData', function($scope, $http) {
+                $scope.refresh = function() {
+                    $scope.focus = null
+                    $scope.RESTloading = true
+                    $http.get("reportData")
+                   .then(
+                       function(response){
+                         $scope.report = response.data;
+                         $scope.RESTloading = false
+                       },
+                       function(response){
+                         $scope.report = null
+                         $scope.RESTloading = false
+                       }
+                    );
+                  };
+            });
+
+    </script>
+</head>
+
+<body>
+    <div ng-controller="reportData" ng-init="refresh()">
+
+        <label><a href="/">Go to airport query service</a></label>
+
+        <h1 ng-show="RESTloading==true">Querying report service ...</h1>
+
+        <h2>{{report.tenWithMost.length}} countries with most airports</h2>
+        <ul>
+            <li ng-repeat="r in report.tenWithMost">
+                <span ng-repeat="(k,v) in r"><strong>{{k}}</strong> -> {{v}}</span>
+            </li>
+        </ul>
+
+        <h2>{{report.tenWithLeast.length}} countries with least airports</h2>
+        <ul>
+            <li ng-repeat="r in report.tenWithLeast">
+                <span ng-repeat="(k,v) in r"><strong>{{k}}</strong> -> {{v}}</span>
+            </li>
+        </ul>
+
+        <h2>{{report.mostCommonRunwayIdent.length}} most common runway ident</h2>
+        <ul>
+            <li ng-repeat="r in report.mostCommonRunwayIdent">
+                <span ng-repeat="(k,v) in r"><strong>{{k}}</strong> -> {{v}}</span>
+            </li>
+        </ul>
+
+        <h2>All {{report.runwaysTypesByCountry.length}} runway types by country</h2>
+        <ul>
+            <li ng-repeat="(key,val) in report.runwaysTypesByCountry">
+                {{key}}
+                <ul>
+                    <li ng-repeat="(k,v) in val">{{k}} <span style="font-size: 0.7em;">({{v}})</span></li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+</body>
+
+</html>

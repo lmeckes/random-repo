@@ -31,7 +31,7 @@
 
 <body>
 <div ng-controller="airportCountry">
-    <label>Enter a country code or a country name: or <a href="/report">View report</a></label>
+    <label>Enter a country code or a country name: or <a href="/report.html">View report</a></label>
     <input type="text" ng-model="queryString" ng-model-options='{debounce: 1000}' ng-change="refresh()"
            placeholder="Enter a country here">
     <hr/>
@@ -43,7 +43,7 @@
     <h1 ng-show="RESTloading==true">Querying airport service ...</h1>
 
     <div ng-show="focus != null"
-         style="position: fixed; top: 1em; right: 1em; width: 50%;">
+         style="position: fixed; top: 3em; right: 1em; width: 50%;">
         <h1>{{focus.name}}</h1>
 
         <ul>
